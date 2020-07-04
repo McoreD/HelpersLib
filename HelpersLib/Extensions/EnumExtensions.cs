@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Text.RegularExpressions;
 
 namespace ShareX.HelpersLib
 {
@@ -128,6 +129,19 @@ namespace ShareX.HelpersLib
             Array values = Enum.GetValues(value.GetType());
             int i = Array.IndexOf(values, value) - 1;
             return i == -1 ? (T)values.GetValue(values.Length - 1) : (T)values.GetValue(i);
+        }
+
+        public static string SplitCamelCase(this string str)
+        {
+            return Regex.Replace(
+                Regex.Replace(
+                    str,
+                    @"(\P{Ll})(\P{Ll}\p{Ll})",
+                    "$1 $2"
+                ),
+                @"(\p{Ll})(\P{Ll})",
+                "$1 $2"
+            );
         }
     }
 }
