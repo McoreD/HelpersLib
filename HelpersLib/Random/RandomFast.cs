@@ -89,5 +89,10 @@ namespace ShareX.HelpersLib
         {
             return array[Next(array.Length - 1)];
         }
+
+        public static void Run(params Action[] actions)
+        {
+            Pick(actions)();
+        }
     }
 }
