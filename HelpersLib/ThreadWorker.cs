@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace HelpersLibStd
+namespace HelpersLib
 {
     public class ThreadWorker
     {

@@ -3,10 +3,17 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>ea92db3c-e264-44ca-a51c-6823bced48a4</UserSecretsId>
+    <AssemblyName>HelpersLibStd</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="NameParser\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NameParser\" />
+  </ItemGroup>
 </Project>

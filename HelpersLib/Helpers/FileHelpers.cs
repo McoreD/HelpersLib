@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace HelpersLibStd
+namespace HelpersLib
 {
     public class FileHelpers
     {
