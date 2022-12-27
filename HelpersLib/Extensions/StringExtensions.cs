@@ -167,7 +167,7 @@ namespace ShareX.HelpersLib
             return text;
         }
 
-        public static string BatchReplace(this string text, Dictionary<string, string> replace)
+        public static string BatchReplace(this string text, Dictionary<string, string> replace, StringComparison comparisonType = StringComparison.CurrentCulture)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -179,15 +179,16 @@ namespace ShareX.HelpersLib
 
                 foreach (KeyValuePair<string, string> entry in replace)
                 {
-                    if (current.StartsWith(entry.Key))
+                    if (current.StartsWith(entry.Key, comparisonType))
                     {
                         if (!string.IsNullOrEmpty(entry.Value))
                         {
                             sb.Append(entry.Value);
                         }
+
                         i += entry.Key.Length - 1;
                         replaced = true;
-                        continue;
+                        break;
                     }
                 }
 
