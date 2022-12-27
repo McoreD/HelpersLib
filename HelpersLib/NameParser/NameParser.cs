@@ -23,11 +23,12 @@
 
 #endregion License Information (GPL v3)
 
-using ShareX.HelpersLib.Properties;
+// using ShareX.HelpersLib.Properties;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using HelpersLib;
 
 namespace ShareX.HelpersLib
 {
@@ -240,9 +241,9 @@ namespace ShareX.HelpersLib
             string result = sb.ToString();
 
             result = result.ReplaceAll(CodeMenuEntryFilename.radjective.ToPrefixString(),
-                () => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(Helpers.GetRandomLine(Resources.adjectives)));
+                () => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(Helpers.GetRandomWord(Resources.adjectives)));
             result = result.ReplaceAll(CodeMenuEntryFilename.ranimal.ToPrefixString(),
-                () => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(Helpers.GetRandomLine(Resources.animals)));
+                () => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(Helpers.GetRandomWord(Resources.animals)));
 
             foreach (Tuple<string, string> entry in ListEntryWithArgument(result, CodeMenuEntryFilename.rf.ToPrefixString()))
             {

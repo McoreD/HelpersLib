@@ -259,6 +259,13 @@ namespace ShareX.HelpersLib
             return null;
         }
 
+        public static string GetRandomWord(string[] words)
+        {
+            Random rand = new Random();
+            int index = rand.Next(words.Length);
+            return words[index];
+        }
+
         public static string GetRandomLineFromFile(string path)
         {
             string text = File.ReadAllText(path, Encoding.UTF8);
