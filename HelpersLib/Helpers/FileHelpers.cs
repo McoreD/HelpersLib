@@ -81,6 +81,36 @@ namespace ShareX.HelpersLib
             return CheckExtension(filePath, VideoFileExtensions);
         }
 
+        public static bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    fs.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static long GetFileSize(string filePath)
+        {
+            try
+            {
+                return new FileInfo(filePath).Length;
+            }
+            catch
+            {
+            }
+
+            return -1;
+        }
+
         public static bool DeleteFile(string filePath, bool sendToRecycleBin = false)
         {
             try
