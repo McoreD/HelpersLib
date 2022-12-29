@@ -45,12 +45,11 @@ namespace ShareX.HelpersLib
 
         private static readonly object ClipboardLock = new object();
 
-        public static async Task<bool> ClearClipboard()
+        public static bool ClearClipboard()
         {
             try
             {
-                await Clipboard.Default.SetTextAsync(null);
-                return true;
+                return CopyText("");
             }
             catch (Exception e)
             {
@@ -74,7 +73,7 @@ namespace ShareX.HelpersLib
         }
 
 
-        public static async Task<bool> CopyTextFromFileAsync(string path)
+        public static bool CopyTextFromFileAsync(string path)
         {
             if (!string.IsNullOrEmpty(path) && File.Exists(path))
             {
