@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>ea92db3c-e264-44ca-a51c-6823bced48a4</UserSecretsId>
     <AssemblyName>HelpersLib</AssemblyName>
+    <UseMaui>true</UseMaui>
   </PropertyGroup>
 
   <ItemGroup>
