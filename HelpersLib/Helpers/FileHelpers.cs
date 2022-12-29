@@ -233,5 +233,26 @@ namespace ShareX.HelpersLib
                 CreateDirectory(directoryPath);
             }
         }
+
+        public static string BackupFileWeekly(string filePath, string destinationFolder)
+        {
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                DateTime dateTime = DateTime.Now;
+                string extension = Path.GetExtension(filePath);
+                string newFileName = string.Format("{0}-{1:yyyy-MM}-W{2:00}{3}", fileName, dateTime, dateTime.WeekOfYear(), extension);
+                string newFilePath = Path.Combine(destinationFolder, newFileName);
+
+                if (!File.Exists(newFilePath))
+                {
+                    CreateDirectory(destinationFolder);
+                    File.Copy(filePath, newFilePath, false);
+                    return newFilePath;
+                }
+            }
+
+            return null;
+        }
     }
 }

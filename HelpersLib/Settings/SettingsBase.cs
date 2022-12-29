@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2020 ShareX Team
+    Copyright (c) 2007-2022 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ShareX.HelpersLib
@@ -109,6 +110,15 @@ namespace ShareX.HelpersLib
             SaveAsync(FilePath);
         }
 
+        public MemoryStream SaveToMemoryStream(bool supportDPAPIEncryption = false)
+        {
+            ApplicationVersion = Assembly.GetEntryAssembly().GetName().Version.ToString();
+
+            MemoryStream ms = new MemoryStream();
+            SaveToStream(ms, supportDPAPIEncryption, true);
+            return ms;
+        }
+
         private bool SaveInternal(string filePath)
         {
             string typeName = GetType().Name;
@@ -122,30 +132,13 @@ namespace ShareX.HelpersLib
                 {
                     lock (this)
                     {
-                        Helpers.CreateDirectoryFromFilePath(filePath);
+                        FileHelpers.CreateDirectoryFromFilePath(filePath);
 
                         string tempFilePath = filePath + ".temp";
 
                         using (FileStream fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write, FileShare.Read, 4096, FileOptions.WriteThrough))
-                        using (StreamWriter streamWriter = new StreamWriter(fileStream))
-                        using (JsonTextWriter jsonWriter = new JsonTextWriter(streamWriter))
                         {
-                            JsonSerializer serializer = new JsonSerializer();
-
-                            if (SupportDPAPIEncryption)
-                            {
-                                // serializer.ContractResolver = new DPAPIEncryptedStringPropertyResolver();
-                            }
-                            else
-                            {
-                                serializer.ContractResolver = new WritablePropertiesOnlyResolver();
-                            }
-
-                            serializer.Converters.Add(new StringEnumConverter());
-                            serializer.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                            serializer.Formatting = Formatting.Indented;
-                            serializer.Serialize(jsonWriter, this);
-                            jsonWriter.Flush();
+                            SaveToStream(fileStream, SupportDPAPIEncryption);
                         }
 
                         if (!JsonHelpers.QuickVerifyJsonFile(tempFilePath))
@@ -161,10 +154,10 @@ namespace ShareX.HelpersLib
                             {
                                 string fileName = Path.GetFileName(filePath);
                                 backupFilePath = Path.Combine(BackupFolder, fileName);
-                                Helpers.CreateDirectoryFromDirectoryPath(BackupFolder);
+                                FileHelpers.CreateDirectory(BackupFolder);
                             }
 
-                            File.Replace(tempFilePath, filePath, backupFilePath);
+                            File.Replace(tempFilePath, filePath, backupFilePath, true);
                         }
                         else
                         {
@@ -173,7 +166,7 @@ namespace ShareX.HelpersLib
 
                         if (CreateWeeklyBackup && !string.IsNullOrEmpty(BackupFolder))
                         {
-                            Helpers.BackupFileWeekly(filePath, BackupFolder);
+                            FileHelpers.BackupFileWeekly(filePath, BackupFolder);
                         }
 
                         isSuccess = true;
@@ -195,23 +188,51 @@ namespace ShareX.HelpersLib
             return isSuccess;
         }
 
-        public static T Load(string filePath, string backupFolder = null)
+        private void SaveToStream(Stream stream, bool supportDPAPIEncryption = false, bool leaveOpen = false)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(stream, new UTF8Encoding(false, true), 1024, leaveOpen))
+            using (JsonTextWriter jsonWriter = new JsonTextWriter(streamWriter))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+
+                if (supportDPAPIEncryption)
+                {
+                    serializer.ContractResolver = new DPAPIEncryptedStringPropertyResolver();
+                }
+                else
+                {
+                    serializer.ContractResolver = new WritablePropertiesOnlyResolver();
+                }
+
+                serializer.Converters.Add(new StringEnumConverter());
+                serializer.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                serializer.Formatting = Formatting.Indented;
+                serializer.Serialize(jsonWriter, this);
+                jsonWriter.Flush();
+            }
+        }
+
+        public static T Load(string filePath, string backupFolder = null, bool fallbackSupport = true)
         {
             List<string> fallbackFilePaths = new List<string>();
-            string tempFilePath = filePath + ".temp";
-            fallbackFilePaths.Add(tempFilePath);
 
-            if (!string.IsNullOrEmpty(backupFolder) && Directory.Exists(backupFolder))
+            if (fallbackSupport && !string.IsNullOrEmpty(filePath))
             {
-                string fileName = Path.GetFileName(filePath);
-                string backupFilePath = Path.Combine(backupFolder, fileName);
-                fallbackFilePaths.Add(backupFilePath);
+                string tempFilePath = filePath + ".temp";
+                fallbackFilePaths.Add(tempFilePath);
 
-                string fileNameNoExt = Path.GetFileNameWithoutExtension(fileName);
-                string lastWeeklyBackupFilePath = Directory.GetFiles(backupFolder, fileNameNoExt + "-*").OrderBy(x => x).LastOrDefault();
-                if (!string.IsNullOrEmpty(lastWeeklyBackupFilePath))
+                if (!string.IsNullOrEmpty(backupFolder) && Directory.Exists(backupFolder))
                 {
-                    fallbackFilePaths.Add(lastWeeklyBackupFilePath);
+                    string fileName = Path.GetFileName(filePath);
+                    string backupFilePath = Path.Combine(backupFolder, fileName);
+                    fallbackFilePaths.Add(backupFilePath);
+
+                    string fileNameNoExt = Path.GetFileNameWithoutExtension(fileName);
+                    string lastWeeklyBackupFilePath = Directory.GetFiles(backupFolder, fileNameNoExt + "-*").OrderBy(x => x).LastOrDefault();
+                    if (!string.IsNullOrEmpty(lastWeeklyBackupFilePath))
+                    {
+                        fallbackFilePaths.Add(lastWeeklyBackupFilePath);
+                    }
                 }
             }
 
@@ -248,6 +269,7 @@ namespace ShareX.HelpersLib
                             using (JsonTextReader jsonReader = new JsonTextReader(streamReader))
                             {
                                 JsonSerializer serializer = new JsonSerializer();
+                                serializer.ContractResolver = new DPAPIEncryptedStringPropertyResolver();
                                 serializer.Converters.Add(new StringEnumConverter());
                                 serializer.DateTimeZoneHandling = DateTimeZoneHandling.Local;
                                 serializer.ObjectCreationHandling = ObjectCreationHandling.Replace;
