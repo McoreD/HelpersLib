@@ -60,11 +60,11 @@ namespace ShareX.HelpersLib
             return false;
         }
 
-        public static async Task<bool> CopyTextAsync(string text)
+        public static bool CopyText(string text)
         {
             try
             {
-                await Clipboard.Default.SetTextAsync(text);
+                Task.Run(() => Clipboard.Default.SetTextAsync(text));
                 return true;
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace ShareX.HelpersLib
                 try
                 {
                     string text = File.ReadAllText(path, Encoding.UTF8);
-                    await CopyTextAsync(text);
+                    CopyText(text);
                 }
                 catch (Exception e)
                 {
