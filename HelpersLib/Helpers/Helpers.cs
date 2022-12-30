@@ -590,6 +590,7 @@ namespace ShareX.HelpersLib
             return time;
         }
 
+        /*TODO: https://learn.microsoft.com/en-au/dotnet/standard/serialization/binaryformatter-security-guide
         public static object Clone(object obj)
         {
             using (MemoryStream ms = new MemoryStream())
@@ -600,6 +601,7 @@ namespace ShareX.HelpersLib
                 return binaryFormatter.Deserialize(ms);
             }
         }
+        */
 
         public static string OutputSpecialFolders()
         {
