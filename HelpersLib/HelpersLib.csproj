@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>ea92db3c-e264-44ca-a51c-6823bced48a4</UserSecretsId>
     <AssemblyName>HelpersLib</AssemblyName>
     <UseMaui>true</UseMaui>
@@ -13,5 +13,11 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="CLI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CLI\" />
   </ItemGroup>
 </Project>

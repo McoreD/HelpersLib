@@ -131,7 +131,7 @@ namespace ShareX.HelpersLib
             }
             catch (Exception e)
             {
-                //  DebugHelper.WriteException(e);
+                DebugHelper.WriteException(e);
             }
 
             return false;
